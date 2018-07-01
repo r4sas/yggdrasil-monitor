@@ -1,0 +1,101 @@
+#server for collecting views of the network
+
+import json
+import time
+import sqlite3
+from sqlite3 import Error
+import os
+import socket
+#ipaddress needs to be installed its not part of the standard lib
+import ipaddress
+import thread
+
+SERVER = ""
+DB_PATH = "vservdb/"
+
+
+def check_coords(coords):
+    coord_len = coords.replace(' ', '').replace('[', '').replace(']', '')
+    digits_found = [x for x in coord_len if x.isdigit()]
+    
+    if len(digits_found) == len(coord_len):
+        crus = True
+    else:
+        crus = False
+    return crus
+
+
+def valid_ipv6_check(ipv6add):
+    import ipaddress
+    try:
+        if ipaddress.IPv6Address(unicode(ipv6add)):
+            addr = True
+    except:
+        addr = False
+    return addr
+
+
+def isdatabase(db_path):
+    if not os.path.exists(db_path + "yggindex.db"):
+        if not os.path.exists(db_path):
+            os.makedirs(db_path)
+        try:
+            conn = sqlite3.connect(db_path + 'yggindex.db')
+            c = conn.cursor()
+            c.execute('create table yggindex(ipv6 varchar(45) UNIQUE, coords varchar(50),\
+                         utimestamp varchar(40))')
+            conn.commit()
+            # c.commit()
+        except Error as e:
+            print(e)
+        finally:
+            conn.close()
+    else:
+        print("found database will not create a new one")
+
+
+def insert_new_entry(db_path, ipv6, coords, utimestamp):
+    try:
+        conn = sqlite3.connect(db_path + "yggindex.db")
+        c = conn.cursor()
+        c.execute('''INSERT OR REPLACE INTO yggindex(ipv6, coords, utimestamp) VALUES(?, ?, ?)''',\
+                    (ipv6, coords, utimestamp)) 
+        conn.commit()
+        conn.close()
+    except Error as e:
+        print(e)
+
+
+def error_check_insert_into_db(dht, switchpeers):
+    try:
+        if "success" == dht.get("status"):
+            for x,y in dht["response"]["dht"].iteritems():
+                if valid_ipv6_check(x) and check_coords(y["coords"]):
+                    insert_new_entry(DB_PATH, x, y["coords"], int(time.time()))
+
+        if "success" == dht.get("status"):
+            for x in switchpeers["response"]["switchpeers"].iteritems():
+                if valid_ipv6_check(x[1]["ip"]) and check_coords(x[1]["coords"]):
+                    insert_new_entry(DB_PATH, x[1]["ip"], x[1]["coords"], int(time.time()))
+    except:
+        print("error in json file, aborting")
+
+def proccess_incoming_data(datty, addr):
+    print addr
+    try:
+        data = json.loads(datty.decode())
+        error_check_insert_into_db(data["dhtpack"], data["switchpack"])
+    except:
+        print "ignoring, data was not json"
+
+isdatabase(DB_PATH)
+
+conn = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+conn.bind((SERVER, 45671))
+
+while True:
+    try:
+        dataraw, addr = conn.recvfrom(1024 * 20)
+        thread.start_new_thread(proccess_incoming_data, (dataraw, addr))
+    except:
+        print "bloop"
