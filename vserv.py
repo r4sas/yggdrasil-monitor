@@ -41,10 +41,9 @@ def isdatabase(db_path):
         try:
             conn = sqlite3.connect(db_path + 'yggindex.db')
             c = conn.cursor()
-            c.execute('create table yggindex(ipv6 varchar(45) UNIQUE, coords varchar(50),\
-                         utimestamp varchar(40))')
+            c.execute('''create table yggindex(ipv6 varchar(45) UNIQUE, coords varchar(50),\
+                        time timestamp default (strftime('%s', 'now')))''')
             conn.commit()
-            # c.commit()
         except Error as e:
             print e
         finally:
