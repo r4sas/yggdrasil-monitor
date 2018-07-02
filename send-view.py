@@ -47,4 +47,4 @@ def collect_dht_getswitchpeers(serport):
     except:
         return None
 
-send_view_to_server(collect_dht_getswitchpeers())
+send_view_to_server(collect_dht_getswitchpeers(host_port))
