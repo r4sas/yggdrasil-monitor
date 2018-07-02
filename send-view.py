@@ -8,7 +8,7 @@ SERVER = "y.yakamo.org"
 
 #gives the option to get data from an external server instead and send that
 #if no options given it will default to localhost instead
-if len(sys.argv) == 4:
+if len(sys.argv) == 3:
     host_port = (sys.argv[1], sys.argv[2])
 else:
     host_port = ('localhost', 9001)
