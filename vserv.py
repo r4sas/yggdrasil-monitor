@@ -88,7 +88,7 @@ def proccess_incoming_data(datty, addr):
 
 isdatabase(DB_PATH)
 
-conn = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 conn.bind((SERVER, 45671))
 
 while True:
