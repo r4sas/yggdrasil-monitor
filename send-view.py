@@ -1,10 +1,17 @@
 import socket
 import json
+import sys
 
 GETDHT = '{"request":"getDHT", "keepalive":true}'
 GETSWITCHPEERS = '{"request":"getSwitchPeers"}'
 SERVER = "y.yakamo.org"
 
+#gives the option to get data from an external server instead and send that
+#if no options given it will default to localhost instead
+if len(sys.argv) == 4:
+    host_port = (sys.argv[1], sys.argv[2])
+elif len(sys.argv) == 1:
+    host_port = ('localhost', 9001)
 
 def send_view_to_server(tosend):
     if tosend:
@@ -21,10 +28,10 @@ def send_view_to_server(tosend):
                 attempts -= 1
 
 
-def collect_dht_getswitchpeers():
+def collect_dht_getswitchpeers(serport):
     try:
         ygg = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        ygg.connect(('localhost', 9001))
+        ygg.connect(host_port)
 
         ygg.send(GETDHT)
         dhtdata = json.loads(ygg.recv(1024 * 15))
