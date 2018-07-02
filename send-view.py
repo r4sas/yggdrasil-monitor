@@ -10,7 +10,7 @@ SERVER = "y.yakamo.org"
 #if no options given it will default to localhost instead
 if len(sys.argv) == 4:
     host_port = (sys.argv[1], sys.argv[2])
-elif len(sys.argv) == 1:
+else:
     host_port = ('localhost', 9001)
 
 def send_view_to_server(tosend):
