@@ -11,8 +11,11 @@ def send_view_to_server(tosend):
         attempts = 3
         while attempts:
             try:
-                conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                conn.sendto(tosend, (SERVER, 45671))
+                conn = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+                conn.connect((SERVER, 45671))
+                conn.send(tosend)
+                conn.close()
+                print "sent ok"
                 break
             except:
                 attempts -= 1
