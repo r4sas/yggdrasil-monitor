@@ -52,12 +52,12 @@ def isdatabase(db_path):
         print("found database will not create a new one")
 
 
-def insert_new_entry(db_path, ipv6, coords, utimestamp):
+def insert_new_entry(db_path, ipv6, coords):
     try:
         conn = sqlite3.connect(db_path + "yggindex.db")
         c = conn.cursor()
-        c.execute('''INSERT OR REPLACE INTO yggindex(ipv6, coords, utimestamp) VALUES(?, ?, ?)''',\
-                    (ipv6, coords, utimestamp))
+        c.execute('''INSERT OR REPLACE INTO yggindex(ipv6, coords) VALUES(?, ?)''',\
+                    (ipv6, coords))
         conn.commit()
         conn.close()
     except Error as e:
