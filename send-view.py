@@ -13,7 +13,6 @@ if len(sys.argv) == 3:
 else:
    host_port = ('localhost', 9001)
 
-host_port = ('localhost', 9001)
 def send_view_to_server(tosend):
     if tosend:
         attempts = 3
