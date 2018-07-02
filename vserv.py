@@ -56,8 +56,8 @@ def insert_new_entry(db_path, ipv6, coords, utimestamp):
     try:
         conn = sqlite3.connect(db_path + "yggindex.db")
         c = conn.cursor()
-        c.execute('''INSERT OR REPLACE INTO yggindex(ipv6, coords, utimestamp) VALUES(?, ?, ?)''',\
-                    (ipv6, coords, utimestamp))
+        c.execute('''INSERT OR REPLACE INTO yggindex(ipv6, coords) VALUES(?, ?)''',\
+                    (ipv6, coords))
         conn.commit()
         conn.close()
     except Error as e:
