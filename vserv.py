@@ -45,19 +45,19 @@ def isdatabase(db_path):
                         time timestamp default (strftime('%s', 'now')))''')
             conn.commit()
         except Error as e:
-            print e
+            print(e)
         finally:
             conn.close()
     else:
-        print"found database will not create a new one"
+        print("found database will not create a new one")
 
 
 def insert_new_entry(db_path, ipv6, coords, utimestamp):
     try:
         conn = sqlite3.connect(db_path + "yggindex.db")
         c = conn.cursor()
-        c.execute('''INSERT OR REPLACE INTO yggindex(ipv6, coords) VALUES(?, ?)''',\
-                    (ipv6, coords))
+        c.execute('''INSERT OR REPLACE INTO yggindex(ipv6, coords, utimestamp) VALUES(?, ?, ?)''',\
+                    (ipv6, coords, utimestamp))
         conn.commit()
         conn.close()
     except Error as e:
@@ -78,22 +78,26 @@ def error_check_insert_into_db(dht, switchpeers):
     except:
         print"error in json file, aborting"
 
+
 def proccess_incoming_data(datty, addr):
     print addr
     try:
-        data = json.loads(datty.decode())
+        ddata = datty.recv(1024 * 20)
+        data = json.loads(ddata.decode())
         error_check_insert_into_db(data["dhtpack"], data["switchpack"])
     except:
         print "ignoring, data was not json"
 
+
 isdatabase(DB_PATH)
 
-conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+conn = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
 conn.bind((SERVER, 45671))
+conn.listen(30)
 
 while True:
     try:
-        dataraw, addr = conn.recvfrom(1024 * 20)
+        dataraw, addr = conn.accept()
         thread.start_new_thread(proccess_incoming_data, (dataraw, addr))
     except:
         print "bloop"
