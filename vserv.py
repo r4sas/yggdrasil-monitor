@@ -41,8 +41,8 @@ def isdatabase(db_path):
         try:
             conn = sqlite3.connect(db_path + 'yggindex.db')
             c = conn.cursor()
-            c.execute('''create table yggindex(ipv6 varchar(45) UNIQUE, coords varchar(50),\
-                        time timestamp default (strftime('%s', 'now')))''')
+            c.execute('create table yggindex(ipv6 varchar(45) UNIQUE, coords varchar(50),\
+                         utimestamp int(40))')
             conn.commit()
         except Error as e:
             print(e)
@@ -56,8 +56,8 @@ def insert_new_entry(db_path, ipv6, coords):
     try:
         conn = sqlite3.connect(db_path + "yggindex.db")
         c = conn.cursor()
-        c.execute('''INSERT OR REPLACE INTO yggindex(ipv6, coords) VALUES(?, ?)''',\
-                    (ipv6, coords))
+        c.execute('''INSERT OR REPLACE INTO yggindex(ipv6, coords, utimestamp) VALUES(?, ?, ?)''',\
+                    (ipv6, coords, utimestamp)) 
         conn.commit()
         conn.close()
     except Error as e:
