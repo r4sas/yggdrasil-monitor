@@ -16,4 +16,5 @@ send-view.py 192.168.1.100 9001
 ## Todo
 
 add Triggers to database for self cleaning of old entrys  
+add rate limiting for sends and requests  
 add postgress function for alternative use  
