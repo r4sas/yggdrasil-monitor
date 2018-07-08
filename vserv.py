@@ -1,7 +1,6 @@
 #server for collecting DHT info
 
 import json
-import time
 import sqlite3
 from sqlite3 import Error
 import os
