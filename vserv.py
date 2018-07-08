@@ -41,8 +41,8 @@ def isdatabase(db_path):
         try:
             conn = sqlite3.connect(db_path + 'yggindex.db')
             c = conn.cursor()
-            c.execute('create table yggindex(ipv6 varchar(45) UNIQUE, coords varchar(50),\
-                         utimestamp int(40))')
+            c.execute('''create table yggindex(ipv6 varchar(45) UNIQUE, coords varchar(50),
+                        ut unixtime default (strftime('%s','now')))''')
             conn.commit()
         except Error as e:
             print(e)
@@ -56,8 +56,8 @@ def insert_new_entry(db_path, ipv6, coords):
     try:
         conn = sqlite3.connect(db_path + "yggindex.db")
         c = conn.cursor()
-        c.execute('''INSERT OR REPLACE INTO yggindex(ipv6, coords, utimestamp) VALUES(?, ?, ?)''',\
-                    (ipv6, coords, utimestamp)) 
+        conn.execute('''INSERT OR REPLACE INTO yggindex(ipv6, coords) VALUES(?, ?)''',\
+                    (ipv6, coords)) 
         conn.commit()
         conn.close()
     except Error as e:
@@ -69,12 +69,12 @@ def error_check_insert_into_db(dht, switchpeers):
         if dht.get("status") == "success":
             for x, y in dht["response"]["dht"].iteritems():
                 if valid_ipv6_check(x) and check_coords(y["coords"]):
-                    insert_new_entry(DB_PATH, x, y["coords"], int(time.time()))
+                    insert_new_entry(DB_PATH, x, y["coords"])
 
         if dht.get("status") == "success":
             for x in switchpeers["response"]["switchpeers"].iteritems():
                 if valid_ipv6_check(x[1]["ip"]) and check_coords(x[1]["coords"]):
-                    insert_new_entry(DB_PATH, x[1]["ip"], x[1]["coords"], int(time.time()))
+                    insert_new_entry(DB_PATH, x[1]["ip"], x[1]["coords"])
     except:
         print"error in json file, aborting"
 
@@ -99,5 +99,5 @@ while True:
     try:
         dataraw, addr = conn.accept()
         thread.start_new_thread(proccess_incoming_data, (dataraw, addr))
-    except:
+    except Exception:
         print "bloop"
