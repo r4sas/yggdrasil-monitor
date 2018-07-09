@@ -2,7 +2,10 @@ from flask import Flask, request
 from flask_restful import Resource, Api
 from sqlalchemy import create_engine
 from json import dumps
+#rate limiting support
 from flask.ext.jsonpify import jsonify
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import time
 import sys
 import os
@@ -16,6 +19,12 @@ if not os.path.exists(db_path):
 db_connect = create_engine('sqlite:///' + db_path)
 app = Flask(__name__)
 api = Api(app)
+
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    default_limits=["500/day", "60/hour"]
+)
 
 #quickly figure out which is old or new
 def age_calc(ustamp):
