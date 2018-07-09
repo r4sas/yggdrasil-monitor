@@ -18,5 +18,5 @@ send-view.py 192.168.1.100 9001
 maybe some kind of testing for current uploads?  
 maybe add api token to prevent abuse?  
 create restrictions on how much data can be sent maybe?  
-add rate limiting for sends and requests  
+add rate limiting for sends and requests/ rate limit in nginx for requests  
 add postgress function for alternative use  
