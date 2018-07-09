@@ -15,10 +15,8 @@ send-view.py 192.168.1.100 9001
 
 ## Todo
 
-__seperate out request for the api:__  
-- current/ for active nodes  
-- old/ anything older than 4hrs  
-- all/ new and old together  
-
+maybe some kind of testing for current uploads?  
+maybe add api token to prevent abuse?  
+create restrictions on how much data can be sent maybe?  
 add rate limiting for sends and requests  
 add postgress function for alternative use  
