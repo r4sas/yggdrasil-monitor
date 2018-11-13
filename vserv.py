@@ -1,6 +1,7 @@
 #server for collecting DHT info
 
 import json
+import time
 import sqlite3
 from sqlite3 import Error
 import os
@@ -40,7 +41,11 @@ def isdatabase(db_path):
         try:
             conn = sqlite3.connect(db_path + 'yggindex.db')
             c = conn.cursor()
-            c.execute('''create table yggindex(ipv6 varchar(45) UNIQUE, coords varchar(50),
+            c.execute('''create table yggindex(ipv6 varchar(45) UNIQUE, coords varchar(50),\
+                        dt datetime default (strftime('%s','now')))''')
+            c.execute('''create table timeseries(max varchar(45),\
+                        dt datetime default (strftime('%s','now')))''')
+            c.execute('''create table contrib(ipv6 varchar(45) UNIQUE,\
                         ut unixtime default (strftime('%s','now')))''')
             conn.commit()
         except Error as e:
@@ -54,16 +59,24 @@ def isdatabase(db_path):
 def insert_new_entry(db_path, ipv6, coords):
     try:
         conn = sqlite3.connect(db_path + "yggindex.db")
-        c = conn.cursor()
-        conn.execute('''INSERT OR REPLACE INTO yggindex(ipv6, coords) VALUES(?, ?)''',\
+        c.execute('''INSERT OR REPLACE INTO yggindex(ipv6, coords) VALUES(?, ?)''',\
                     (ipv6, coords)) 
         conn.commit()
         conn.close()
     except Error as e:
         print e
 
+def contrib_entry(db_path, ipv6):
+    try:
+        conn = sqlite3.connect(db_path + "yggindex.db")
+            c.execute('''INSERT OR REPLACE INTO contrib(ipv6) VALUES(''' + "'"\
+                        + ipv6 + "'" + ''')''')
+        conn.commit()
+        conn.close()
+    except Error as e:
+        print e
 
-def error_check_insert_into_db(dht, switchpeers):
+def error_check_insert_into_db(dht, switchpeers, addr):
     try:
         if dht.get("status") == "success":
             for x, y in dht["response"]["dht"].iteritems():
@@ -74,12 +87,14 @@ def error_check_insert_into_db(dht, switchpeers):
             for x in switchpeers["response"]["switchpeers"].iteritems():
                 if valid_ipv6_check(x[1]["ip"]) and check_coords(x[1]["coords"]):
                     insert_new_entry(DB_PATH, x[1]["ip"], x[1]["coords"])
+
+        contrib_entry(addr)
     except:
         print"error in json file, aborting"
 
 
 def proccess_incoming_data(datty, addr):
-    print addr
+    print str(time.time()) + " " + addr
     try:
         ddata = datty.recv(1024 * 20)
         data = json.loads(ddata.decode())
