@@ -1,0 +1,23 @@
+<!doctype html>
+<title>API</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}"/>
+<html>
+   <body>
+    <div id="wrapper">
+            <div id="title">
+	    <a href='/'>Yggdrasil Network API</a>
+            </div>
+            This API provides collected DHT views from different nodes around the network in an effort to let yggdrasil developers and others research the networks growth.<br /><br /><br />
+
+            <strong>Current Nodes online:</strong> {{ nodes }}<br /><br />
+
+            <a href="static/map.svg">Yggdrasil World map</a><br/><br/> 
+	    <a href="/contrib">Contributors</a><br /><br /><br />
+            <strong>Make an API request:</strong><br/><br/>
+            <a href="/current">http://y.yakamo.org:3000/current</a><br/><br/><br/>
+            To contribute to the yggdrasil world map, you can send your view of the network using <a href="https://github.com/yakamok/ygg-node-db/blob/master/send-view.py">send-view.py</a>. Set a Cron job to once an hour.<br/><br/>
+
+            Thanks to Arceliar for the map generating script.
+    </div>
+   </body>
+</html>
