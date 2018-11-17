@@ -1,8 +1,8 @@
 # Niflheim-api
 
-### A collection of tools to support the yggapi:
+### A collection of tools to support the Niflheim-api:
 vserv.py - collects dht views from volunteer nodes.  
-yggapi.py - presents the data via an API and Web UI  
+niflheim-api.py - presents the data via an API and Web UI  
 
 ### send-view.py
 
