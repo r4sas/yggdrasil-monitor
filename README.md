@@ -17,3 +17,5 @@ send-view.py 192.168.1.100 9001
 ## Todo
 
 Redesign client server negotiation for data  
+add instructions for installtion in the readme  
+write script to test the server and api by generating fake data  
