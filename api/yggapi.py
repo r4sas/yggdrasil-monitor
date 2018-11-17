@@ -1,35 +1,24 @@
 from flask import Flask, request, render_template
 from flask_restful import Resource, Api
-from sqlalchemy import create_engine
 from json import dumps
-#adding rate limiting support
 from flask import jsonify
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 import time
 import sys
 import os
 import time
 import requests
+import psycopg2
 
-#check if a database exists or not
-db_path = "vservdb/yggindex.db"
-if not os.path.exists(db_path):
-    print "could not find a database"
-    sys.exit(0)
-
-db_connect = create_engine('sqlite:///' + db_path)
 app = Flask(__name__)
 api = Api(app)
 
-limiter = Limiter(
-    app,
-    key_func=get_remote_address,
-    default_limits=["500/day", "60/hour"]
-)
+DB_PASSWORD = "password"
+DB_USER = "yggindex"
+DB_NAME = "yggindex"
+DB_HOST = "localhost"
 
 def get_nodelist():
-    data = requests.get("https://raw.githubusercontent.com/yakamok/yggdrasil-nodelist/master/nodelist")
+    data = requests.get("use the raw view of the github nodelist", timeout=1)
     nodes = [x.split() for x in data.text.split('\n') if x]
     
     index_table = {}
@@ -49,7 +38,6 @@ def check_nodelist(nodetable, key):
         return key
 
 
-#quickly figure out which is old or new
 def age_calc(ustamp):
     if (time.time() - ustamp) <= 14400 :
         return True
@@ -59,13 +47,17 @@ def age_calc(ustamp):
 #active nodes in the past 4hrs
 class nodes_current(Resource):
     def get(self):
-        conn = db_connect.connect()
-        query = conn.execute("select * from yggindex")
+        dbconn = psycopg2.connect(host=DB_HOST,database=DB_NAME, user=DB_USER, password=DB_PASSWORD)
+        cur = dbconn.cursor()
         nodes = {}
+        cur.execute("select * from yggindex")
+        for i in cur.fetchall():
+            if age_calc(int(i[2])):
+                nodes[i[0]] = [i[1],int(i[2])]
 
-        for i in query.cursor.fetchall():
-            if age_calc(i[2]):
-                nodes[i[0]] = [i[1],i[2]]
+        dbconn.commit()
+        cur.close()
+        dbconn.close()
 
         nodelist = {}
         nodelist['yggnodes'] = nodes
@@ -75,13 +67,18 @@ class nodes_current(Resource):
 
 @app.route("/")
 def fpage():
-    conn = db_connect.connect()
-    query = conn.execute("select * from yggindex")
+    dbconn = psycopg2.connect(host=DB_HOST,database=DB_NAME, user=DB_USER, password=DB_PASSWORD)
+    cur = dbconn.cursor()
     nodes = {}
+    cur.execute("select * from yggindex")
 
-    for i in query.cursor.fetchall():
-        if age_calc(i[2]):
-            nodes[i[0]] = [i[1],i[2]]
+    for i in cur.fetchall():
+        if age_calc(int(i[2])):
+            nodes[i[0]] = [i[1],int(i[2])]
+
+    dbconn.commit()
+    cur.close()
+    dbconn.close()
 
     return render_template('index.html', nodes = str(len(nodes)))
 
@@ -95,13 +92,18 @@ def cpage():
         print "failed"
         NODELIST = None
 
-    conn = db_connect.connect()
-    query = conn.execute("select * from contrib")
+    dbconn = psycopg2.connect(host=DB_HOST,database=DB_NAME, user=DB_USER, password=DB_PASSWORD)
+    cur = dbconn.cursor()
+    cur.execute("select * from contrib")
     nodes = []
 
-    for i in query.cursor.fetchall():
-        if age_calc(i[1]):
+    for i in cur.fetchall():
+        if age_calc(int(i[1])):
             nodes.append(i[0])
+
+    dbconn.commit()
+    cur.close()
+    dbconn.close()
 
     dnodes = []
     for x in nodes:
@@ -109,12 +111,11 @@ def cpage():
 
     dnodes.sort(reverse=True)
 
-    return render_template('contrib.html', contribnodes = dnodes)
+    return render_template('contrib.html', contribnodes = dnodes, nocontribs=str(len(dnodes)))
 
 
 #sort out the api request here for the url
 api.add_resource(nodes_current, '/current')
-# api.add_resource(nodes_contrib, '/contrib')
 
 if __name__ == '__main__':
      app.run(host='::', port=3000)
