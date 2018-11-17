@@ -1,39 +1,43 @@
-#add current node count to timeseries table
-#can later be used to plot a graph showing daily max nodes on the network
-#run every hour
-
-import sqlite3
-from sqlite3 import Error
+#max/min for the day with nodes
+import psycopg2
 import time
 
-DB_PATH = "vservdb/"
+#run every hour
 
+DB_PASSWORD = "password"
+DB_USER = "yggindex"
+DB_NAME = "yggindex"
+DB_HOST = "localhost"
 
 def age_calc(ustamp):
-    if (time.time() - ustamp) <= 14400 :
-        return True
-    else:
-        return False
+	if (time.time() - ustamp) <= 14400 :
+		return True
+	else:
+		return False
 
+def get_nodes_for_count():
+	dbconn = psycopg2.connect(host=DB_HOST,database=DB_NAME, user=DB_USER, password=DB_PASSWORD)
+	cur = dbconn.cursor()
+	nodes = {}
+	cur.execute("select * from yggindex")
 
-def get_nodes_for_count(db_path):
-	conn = sqlite3.connect(db_path + 'yggindex.db')
-	query = conn.execute("select * from yggindex")
-	nodes = []
-	for i in query.fetchall():
-	    if age_calc(i[2]):
-	        nodes.append(i[1])
+	for i in cur.fetchall():
+		if age_calc(int(i[2])):
+			nodes[i[0]] = [i[1],int(i[2])]
+
+	cur.close()
+	dbconn.close()
+
 	return str(len(nodes))
 
+def add_to_db():
+	dbconn = psycopg2.connect(host=DB_HOST,database=DB_NAME, user=DB_USER, password=DB_PASSWORD)
+	cur = dbconn.cursor()
 
-def add_to_timeseries(db_path):
-	# try:
-	conn = sqlite3.connect(db_path + "yggindex.db")
-	c = conn.cursor()
-	c.execute('''INSERT INTO timeseries(max) VALUES(''' + "'"\
-				+ get_nodes_for_count(db_path) + "'" + ''')''')
-	conn.commit()
-	conn.close()
+	cur.execute('''INSERT INTO timeseries(max, unixtstamp) VALUES(''' + "'" + get_nodes_for_count() + "'," + str(int(time.time())) + ''')''')
 
+	dbconn.commit()
+	cur.close()
+	dbconn.close()
 
-add_to_timeseries(DB_PATH)
+add_to_db()
