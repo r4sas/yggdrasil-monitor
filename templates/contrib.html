@@ -1,0 +1,21 @@
+<!doctype html>
+<title>API</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}"/>
+<html>
+   <body>
+    <div id="wrapper">
+            <div id="title">
+		    <a href='/'>Yggdrasil Network API</a>
+            </div>
+
+	    <h2>Contributors - {{nocontribs}}</h2>
+	    <p>This is a list of contributors sending in their view of the network, this list is based on the contributions sent in the last 4 hours.</p><br />
+
+	  {% for x in contribnodes %}
+		  <div class="contribs">{{ x }}</div>
+	  {% endfor %}
+
+
+    </div>
+   </body>
+</html>
