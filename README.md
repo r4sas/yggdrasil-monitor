@@ -1,5 +1,8 @@
 # ygg-node-db
-server to collect DHT views from yggdrasil nodes and store in a data base
+
+### A collection of tools to support the yggapi:
+vserv.py - collects dht views from volunteer nodes.  
+yggapi.py - presents the data via an API and Web UI  
 
 ### send-view.py
 
