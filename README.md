@@ -1,4 +1,4 @@
-# ygg-node-db
+# Niflheim-api
 
 ### A collection of tools to support the yggapi:
 vserv.py - collects dht views from volunteer nodes.  
