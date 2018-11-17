@@ -45,6 +45,6 @@ def collect_dht_getswitchpeers(serport):
 
         return json.dumps(temp_dict).encode()
     except:
-        return None
+        return False
 
 send_view_to_server(collect_dht_getswitchpeers(host_port))
