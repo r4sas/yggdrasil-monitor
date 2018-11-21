@@ -4,7 +4,8 @@ Niflheim-api provides both a web interface and an api. The web interface is used
 
 ## Install & Setup
 
-__python dependancies:__  
+
+Install the following python packages either via your package manager or Pip: 
 
 flask  
 flask_restful  
