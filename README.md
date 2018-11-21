@@ -4,6 +4,8 @@
 vserv.py - collects dht views from volunteer nodes.  
 niflheim-api.py - presents the data via an API and Web UI  
 
+For installation instructions, you will find them in the README.md in the api folder and the vserv folder.  
+
 ### send-view.py
 
 Very simple to use just add in crontab and run once an hour.  
