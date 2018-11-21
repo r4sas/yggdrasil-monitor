@@ -1,0 +1,11 @@
+[Unit]
+Description=yggapi
+After=network.target
+
+[Service]
+User=yakamo
+ExecStart=/usr/bin/python /opt/yggapi.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
