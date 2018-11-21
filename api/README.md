@@ -10,6 +10,7 @@ flask
 flask_restful  
 psycopg2  
 
+
 Configure niflheim-api.py to use the Postgres databse you setup for vserv.py.  
 
 __So open niflheim-api.py:__  
