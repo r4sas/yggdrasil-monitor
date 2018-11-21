@@ -6,7 +6,7 @@ This server collects dht views from volunteer nodes from all over the network to
 
 This install assumes your using Linux.  
 
-__python dependancies:__  
+Install the following python packages via either your package manager or Pip:  
 
     Psycopg2  
     ipaddress
