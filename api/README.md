@@ -23,3 +23,4 @@ __Accessing the API data:__
 
     http://exmaple.com:3000/current  
 
+Add yggapi.services to systemd.  
