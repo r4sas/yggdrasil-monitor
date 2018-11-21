@@ -1,6 +1,6 @@
 # niflheim-api.py
 
-This api provides a web interface to see some basic stats on the data vserv.py has collected and also provides an easy way to get the data through the api.  
+Niflheim-api provides both a web interface and an api. The web interface is used to see some basic stats on the data vserv.py has collected and the API provides raw data in JSON format.  
 
 ## Install & Setup
 
@@ -18,3 +18,8 @@ Make sure the above matches what you have in vserv.py.
 The API will startup on port 3000 and accept all ipv6 connections if you want to change this edit the last line:  
 
     app.run(host='::', port=3000)
+
+__Accessing the API dat:__  
+
+    http://exmaple.com:3000/current  
+
