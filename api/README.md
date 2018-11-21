@@ -19,7 +19,7 @@ The API will startup on port 3000 and accept all ipv6 connections if you want to
 
     app.run(host='::', port=3000)
 
-__Accessing the API dat:__  
+__Accessing the API data:__  
 
     http://exmaple.com:3000/current  
 
