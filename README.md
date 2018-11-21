@@ -12,8 +12,3 @@ __Access External Admin API:__
 If you want to get access to an external Admin API on another server:  
 
     send-view.py 192.168.1.100 9001  
-
-
-## Todo
-
-Redesign client server negotiation for data   
