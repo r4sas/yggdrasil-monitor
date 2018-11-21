@@ -4,9 +4,9 @@ This api provides a web interface to see some basic stats on the data vserv.py h
 
 ## Install & Setup
 
-First thing you are going to do is configure niflheim-api.py to use the Postgres databse you setup for vserv.py.  
+Configure niflheim-api.py to use the Postgres databse you setup for vserv.py.  
 
-So open niflheim-api.py:
+__So open niflheim-api.py:__  
 
     DB_PASSWORD = "password"
     DB_USER = "yggindex"
