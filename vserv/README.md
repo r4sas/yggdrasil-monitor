@@ -2,7 +2,7 @@
 
 This server collects dht views from volunteer nodes from all over the network to get a better picture of the network as a whole.  
 
-##Install
+## Install
 
 This install assumes your using Linux.  
 
