@@ -1,6 +1,6 @@
 # niflheim-api.py
 
-This api provides a web interface to see some basic stats on the data vserv.py has collected and also provides and easy way to get the data through the api.  
+This api provides a web interface to see some basic stats on the data vserv.py has collected and also provides an easy way to get the data through the api.  
 
 ## Install & Setup
 
