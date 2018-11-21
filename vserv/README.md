@@ -6,6 +6,12 @@ This server collects dht views from volunteer nodes from all over the network to
 
 This install assumes your using Linux.  
 
+__python dependancies:__  
+
+    Psycopg2  
+    ipaddress
+
+
 First install postgres and setup a database & username called yggindex and a password of your choice.  
 
 Once you have done this open vserv.py and edit "DB_PASSWORD" to use the password you set, also change DB_host if your running the Database on another machine:
