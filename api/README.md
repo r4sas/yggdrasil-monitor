@@ -7,9 +7,9 @@ Niflheim-api provides both a web interface and an api. The web interface is used
 
 Install the following python packages either via your package manager or Pip: 
 
-flask  
-flask_restful  
-psycopg2  
+    flask  
+    flask_restful  
+    psycopg2  
 
 
 Configure niflheim-api.py to use the Postgres databse you setup for vserv.py.  
