@@ -2,7 +2,7 @@
 
 This server collects dht views from volunteer nodes from all over the network to get a better picture of the network as a whole.  
 
-## Install
+## Install & Setup
 
 This install assumes your using Linux.  
 
@@ -20,9 +20,3 @@ Once you have done this you will need to start vserv.py with the option gentable
     python vserv.py gentables
 
 After this stop Vserv.py and start it again with out the option gentables and that should be it running now ready to accept views from other nodes using send-view.py
-
-## Todo
-
-add database config file instead  
-add new blacklist and graylist code  
-add better client/server negotiaton  
