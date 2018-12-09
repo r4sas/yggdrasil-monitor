@@ -104,7 +104,7 @@ def error_check_insert_into_db(dht, switchpeers, ipv6):
                 if valid_ipv6_check(x) and check_coords(y["coords"]):
                     insert_new_entry(x, y["coords"])
 
-        if dht.get("status") == "success":
+        if switchpeers.get("status") == "success":
             for x in switchpeers["response"]["switchpeers"].iteritems():
                 if valid_ipv6_check(x[1]["ip"]) and check_coords(x[1]["coords"]):
                     insert_new_entry(x[1]["ip"], x[1]["coords"])
