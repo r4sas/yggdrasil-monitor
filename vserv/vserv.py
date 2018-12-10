@@ -15,10 +15,6 @@ DB_USER = "yggindex"
 DB_NAME = "yggindex"
 DB_HOST = "localhost"
 
-#To setup tables in the database on first run please use:
-#python vserv.py gentables
-#This will generate all the tables needed
-
 def create_tables():
     try:
         dbconn = psycopg2.connect(host=DB_HOST,database=DB_NAME, user=DB_USER, password=DB_PASSWORD)
@@ -37,7 +33,6 @@ def create_tables():
     except:
         print "somethings up, check you created the database correctly"
 
-#check if tables need to be generated or not
 if len(sys.argv) > 1:
     if sys.argv[1] == "gentables":
         create_tables()
@@ -80,7 +75,6 @@ def insert_new_entry(ipv6, coords):
         cur.close()
         dbconn.close()
 
-
 def contrib_entry(ipv6):
     try:
         dbconn = psycopg2.connect(host=DB_HOST,database=DB_NAME, user=DB_USER, password=DB_PASSWORD)
@@ -96,7 +90,6 @@ def contrib_entry(ipv6):
         cur.close()
         dbconn.close()
 
-
 def error_check_insert_into_db(dht, switchpeers, ipv6):
     try:
         if dht.get("status") == "success":
@@ -111,13 +104,24 @@ def error_check_insert_into_db(dht, switchpeers, ipv6):
 
         contrib_entry(ipv6)
     except:
-        print"error in json file, aborting"
+        print "error in json file, aborting"
+
+
+def recv_until_done(soc):
+    all_data = []
+    while True:
+        incoming_data = soc.recv(8192)
+        if not incoming_data:
+            soc.close()
+            break
+        all_data.append(incoming_data)
+    return ''.join(all_data)
 
 
 def proccess_incoming_data(datty, ipv6):
     print str(time.time()) + " " + str(ipv6)
     try:
-        ddata = datty.recv(18128)
+        ddata = recv_until_done(datty)
         data = json.loads(ddata.decode())
         error_check_insert_into_db(data["dhtpack"], data["switchpack"], ipv6)
     except:
