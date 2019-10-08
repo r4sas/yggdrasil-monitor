@@ -21,7 +21,7 @@ __So open niflheim-api.py:__
     DB_NAME = "yggindex"
     DB_HOST = "localhost"
 
-Make sure the above matches what you have in vserv.py.  
+Make sure the above matches what you have in the crawler.  
 
 The API will startup on port 3000 and accept all ipv6 connections if you want to change this edit the last line:  
 
