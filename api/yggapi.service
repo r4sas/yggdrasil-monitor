@@ -3,9 +3,11 @@ Description=yggapi
 After=network.target
 
 [Service]
-User=yakamo
-ExecStart=/usr/bin/python /opt/yggapi.py
+WorkingDirectory=/opt/yggdrasil-api/api
+ExecStart=/opt/yggdrasil-api/venv/bin/python /opt/yggdrasil-api/api/niflheim-api.py
 Restart=always
+
+EnvironmentFile=/opt/yggdrasil-api/venv/bin/activate
 
 [Install]
 WantedBy=multi-user.target

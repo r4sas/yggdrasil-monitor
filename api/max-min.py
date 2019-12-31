@@ -1,4 +1,7 @@
+#!/usr/bin/env python
+
 #max/min for the day with nodes
+
 import psycopg2
 import time
 

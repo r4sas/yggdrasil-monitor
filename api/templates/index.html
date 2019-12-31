@@ -2,22 +2,36 @@
 <title>API</title>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}"/>
 <html>
-   <body>
-    <div id="wrapper">
+    <body>
+        <div id="wrapper">
             <div id="title">
-	    <a href='/'>Yggdrasil Network API</a>
+                <a href='/'>Yggdrasil Network API</a>
             </div>
-            This API provides collected DHT views from different nodes around the network in an effort to let yggdrasil developers and others research the networks growth.<br /><br /><br />
+            This API provides collected DHT views from different nodes around the network in an effort to let yggdrasil developers and others research the networks growth.<br /><br />
 
-            <strong>Current Nodes online:</strong> {{ nodes }}<br /><br />
+            <div class="wide"></div>
+            <center>
+                <strong>Current Nodes online<br />
+                <font size="18">{{ nodes }}</font></strong>
+            </center>
+            <br /><br />
+            <a href="http://[21f:dd73:7cdb:773b:a924:7ec0:800b:221e]/">Yggdrasil Interactive World map</a><br /><br />
 
-            <a href="static/map.svg">Yggdrasil World map</a><br/><br/> 
-	    <a href="/contrib">Contributors</a><br /><br /><br />
-            <strong>Make an API request:</strong><br/><br/>
-            <a href="/current">http://y.yakamo.org:3000/current</a><br/><br/><br/>
-            To contribute to the yggdrasil world map, you can send your view of the network using <a href="https://github.com/yakamok/ygg-node-db/blob/master/send-view.py">send-view.py</a>. Set a Cron job to once an hour.<br/><br/>
+            <div class="wide"></div>
+            <strong>Make an API request</strong><br />
+            <small>note: data updated every 15 minutes, all requests are returned in JSON.</small><br /><br />
 
-            Thanks to Arceliar for the map generating script.
-    </div>
-   </body>
+            Get a current list of active and online nodes:<br />
+            <div class="apireq">
+                <a href="/current">http://[31a:fb8a:c43e:ca59::2]/current</a>
+            </div>
+            Nodeino from all current active nodes:<br />
+            <div class="apireq">
+                <a href="/nodeinfo">http://[31a:fb8a:c43e:ca59::2]/nodeinfo</a>
+            </div>
+
+            <div class="wide"></div>
+            <small>Made with <a href="https://github.com/yakamok/Niflheim-api">Niflheim-API</a> by yakamok</small>
+        </div>
+    </body>
 </html>

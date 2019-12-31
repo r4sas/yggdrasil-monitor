@@ -1,28 +1,56 @@
 /* style sheet for api pages */
 body, input, textarea {
- font-family: sans-serif;
- padding: 0;
- margin: 0;
- background-color: #F0F0F0;
-}a {
- text-decoration:none;
- color:#800000;
-}h2 {
- font-size:18px;
-}#title {
- max-width:570px;
- margin-bottom:40px;
- line-height: 35px;
- font-size: 25px;
- font-weight: bold;
- padding-top:20px;
- padding-bottom:5px;
- border-bottom:1px solid #c4c4c4;
-}#wrapper {
- font-size: 15px;
- max-width: 570px;
- margin: auto;
-}.contribs {
- font-size:13px;
- margin-bottom:6px;
+  font-family: sans-serif;
+  padding: 0;
+  margin: 0;
+  background-color: #F0F0F0;
+}
+
+a {
+  text-decoration: none;
+  color: #800000;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+#title {
+	max-width: 570px;
+	margin-bottom: 40px;
+	line-height: 35px;
+	font-size: 25px;
+	font-weight: bold;
+	padding-top: 20px;
+	padding-bottom: 5px;
+	border-bottom: 1px solid #c4c4c4;
+}
+
+#title a {
+	color:#302f30;
+}
+
+#wrapper {
+	font-size: 15px;
+	max-width: 570px;
+	margin: auto;
+}
+
+.apireq {
+	padding-top: 5px;
+	padding-left: 10px;
+	padding-bottom: 5px;
+	line-height: 25px;
+	background-color: #e5e5e5;
+	color: #4c4c4c;
+	border-top: solid 1px #d3d3d3;
+	border-bottom: solid 1px #d3d3d3;
+	margin-top: 8px;
+	margin-bottom: 20px;
+}
+
+.wide {
+	width: 100%;
+	border-bottom: solid 1px #d3d3d3;
+	margin-bottom: 25px;
 }
