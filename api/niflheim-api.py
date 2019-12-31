@@ -15,6 +15,8 @@ DB_USER = "yggindex"
 DB_NAME = "yggindex"
 DB_HOST = "localhost"
 
+# count peer alive if it was available not more that amount of seconds ago
+# I'm using 1 hour beause of running cron job every 15 minutes
 ALIVE_SECONDS = 3600 # 1 hour
 
 
