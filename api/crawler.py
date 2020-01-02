@@ -7,12 +7,11 @@
 import psycopg2
 import json
 import socket
-import sys
 import time
 import ipaddress
 import traceback
 from threading import Lock, Thread
-from Queue import Queue
+from queue import Queue
 
 # Configuration to use TCP connection or unix domain socket for admin connection to yggdrasil
 useAdminSock = True
@@ -72,18 +71,18 @@ def recv_until_done(soc):
             soc.close()
             break
         all_data.append(incoming_data)
-    return ''.join(all_data)
+    return b''.join(all_data)
 
 
 def getDHTPingRequest(key, coords, target=None):
     if target:
-        return '{{"request":"dhtPing", "box_pub_key":"{}", "coords":"{}", "target":"{}"}}'.format(key, coords, target)
+        return '{{"request":"dhtPing", "box_pub_key":"{}", "coords":"{}", "target":"{}"}}'.format(key, coords, target).encode('utf-8')
     else:
-        return '{{"request":"dhtPing", "box_pub_key":"{}", "coords":"{}"}}'.format(key, coords)
+        return '{{"request":"dhtPing", "box_pub_key":"{}", "coords":"{}"}}'.format(key, coords).encode('utf-8')
 
 
 def getNodeInfoRequest(key, coords):
-    return '{{"request":"getNodeInfo", "box_pub_key":"{}", "coords":"{}"}}'.format(key, coords)
+    return '{{"request":"getNodeInfo", "box_pub_key":"{}", "coords":"{}"}}'.format(key, coords).encode('utf-8')
 
 
 def getNodeInfoTask(address, info):
@@ -158,7 +157,7 @@ def insert_new_entry(ipv6, coords):
         cur.close()
         dbconn.close()
     except Exception as e:
-        print "database error inserting"
+        print("database error inserting")
         traceback.print_exc()
 
 def handleNodeInfo(address, data):
@@ -187,7 +186,7 @@ def handleResponse(address, info, data):
         return
     if 'nodes' not in data['response']:
         return
-    for addr,rumor in data['response']['nodes'].iteritems():
+    for addr,rumor in data['response']['nodes'].items():
         if addr in visited: continue
         rumored[addr] = rumor
     if address not in visited:
@@ -198,16 +197,16 @@ def handleResponse(address, info, data):
     nodeinfopool.add(getNodeInfoTask, address, info)
 
 # Get self info
-selfInfo = doRequest('{"request":"getSelf"}')
+selfInfo = doRequest('{"request":"getSelf"}'.encode('utf-8'))
 
 # Initialize dicts of visited/rumored nodes
-for k,v in selfInfo['response']['self'].iteritems():
+for k,v in selfInfo['response']['self'].items():
     rumored[k] = v
 
 # Loop over rumored nodes and ping them, adding to visited if they respond
 while len(rumored) > 0:
-    for k,v in rumored.iteritems():
-        #print "Processing", v['coords']
+    for k,v in rumored.items():
+        #print("Processing", v['coords'])
         handleResponse(k, v, doRequest(getDHTPingRequest(v['box_pub_key'], v['coords'])))
         break
     del rumored[k]
@@ -215,6 +214,6 @@ while len(rumored) > 0:
 
 nodeinfopool.wait()
 
-for x, y in visited.iteritems():
+for x, y in visited.items():
     if valid_ipv6_check(x) and check_coords(y):
         insert_new_entry(x, y)
