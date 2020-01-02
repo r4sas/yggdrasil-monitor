@@ -16,7 +16,7 @@ DB_NAME = "yggindex"
 DB_HOST = "localhost"
 
 # count peer alive if it was available not more that amount of seconds ago
-# I'm using 1 hour beause of running cron job every 15 minutes
+# I'm using 1 hour beause of running crawler every 15 minutes
 ALIVE_SECONDS = 3600 # 1 hour
 
 
@@ -74,6 +74,30 @@ class nodesInfo(Resource):
         return nodeinfo
 
 
+# alive nodes count for latest 24 hours
+class nodes24h(Resource):
+    def get(self):
+        dbconn = psycopg2.connect(host=DB_HOST,\
+                                    database=DB_NAME,\
+                                    user=DB_USER,\
+                                    password=DB_PASSWORD)
+        cur = dbconn.cursor()
+        nodes = {}
+        cur.execute("SELECT * FROM timeseries ORDER BY unixtstamp DESC LIMIT 24")
+        for i in cur.fetchall():
+            nodes[i[1]] = i[0]
+
+        dbconn.commit()
+        cur.close()
+        dbconn.close()
+
+        nodeinfo = {}
+        nodeinfo['nodes24h'] = nodes
+
+        return nodeinfo
+
+
+
 @app.route("/")
 def fpage():
     dbconn = psycopg2.connect(host=DB_HOST,\
@@ -98,6 +122,7 @@ def fpage():
 #sort out the api request here for the url
 api.add_resource(nodesCurrent, '/current')
 api.add_resource(nodesInfo, '/nodeinfo')
+api.add_resource(nodes24h, '/nodes24h')
 
 if __name__ == '__main__':
     app.run(host='::', port=3000)
