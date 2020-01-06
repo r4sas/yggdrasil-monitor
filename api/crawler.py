@@ -23,9 +23,9 @@ DB_USER = "yggindex"
 DB_NAME = "yggindex"
 DB_HOST = "localhost"
 
-## Save in database node info fields like buildname, buildarch, buildplatform, buildversion (True/False)?
+## Save in database node info fields like buildname, buildarch, etc. (True/False)?
 saveDefaultNodeInfo = False
-removableFileds = ['buildname', 'buildarch', 'buildplatform', 'buildversion']
+removableFileds = ['buildname', 'buildarch', 'buildplatform', 'buildversion', 'board_name', 'kernel', 'model', 'system']
 
 class Worker(Thread):
     def __init__(self, tasks):
