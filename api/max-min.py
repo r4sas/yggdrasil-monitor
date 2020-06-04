@@ -7,7 +7,7 @@ import time
 
 #run every hour
 
-DB_PASSWORD = "password"
+DB_PASS = "password"
 DB_USER = "yggindex"
 DB_NAME = "yggindex"
 DB_HOST = "localhost"
@@ -24,7 +24,7 @@ def age_calc(ustamp):
 		return False
 
 def get_nodes_for_count():
-	dbconn = psycopg2.connect(host=DB_HOST,database=DB_NAME, user=DB_USER, password=DB_PASSWORD)
+	dbconn = psycopg2.connect(host=DB_HOST,database=DB_NAME, user=DB_USER, password=DB_PASS)
 	cur = dbconn.cursor()
 	nodes = {}
 	cur.execute("select * from yggindex")
@@ -39,7 +39,7 @@ def get_nodes_for_count():
 	return str(len(nodes))
 
 def add_to_db():
-	dbconn = psycopg2.connect(host=DB_HOST,database=DB_NAME, user=DB_USER, password=DB_PASSWORD)
+	dbconn = psycopg2.connect(host=DB_HOST,database=DB_NAME, user=DB_USER, password=DB_PASS)
 	cur = dbconn.cursor()
 
 	cur.execute('''INSERT INTO timeseries(max, unixtstamp) VALUES(''' + "'" + get_nodes_for_count() + "'," + str(int(time.time())) + ''')''')

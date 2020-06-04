@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 
-import time
+import signal, sys, time
 from flask import Flask, render_template
 from flask_restful import Resource, Api
 import requests
 import psycopg2
 import json
 
-app = Flask(__name__)
-api = Api(app)
+######
 
-DB_PASSWORD = "password"
+DB_PASS = "password"
 DB_USER = "yggindex"
 DB_NAME = "yggindex"
 DB_HOST = "localhost"
@@ -19,6 +18,19 @@ DB_HOST = "localhost"
 # I'm using 1 hour beause of running crawler every 15 minutes
 ALIVE_SECONDS = 3600 # 1 hour
 
+######
+
+app = Flask(__name__)
+api = Api(app)
+
+dbconn = psycopg2.connect(host=DB_HOST,\
+                          database=DB_NAME,\
+                          user=DB_USER,\
+                          password=DB_PASS)
+
+def signal_handler(sig, frame):
+    dbconn.close()
+    sys.exit(0)
 
 def age_calc(ustamp):
     if (time.time() - ustamp) <= ALIVE_SECONDS:
@@ -29,10 +41,6 @@ def age_calc(ustamp):
 # active nodes
 class nodesCurrent(Resource):
     def get(self):
-        dbconn = psycopg2.connect(host=DB_HOST,\
-                                    database=DB_NAME,\
-                                    user=DB_USER,\
-                                    password=DB_PASSWORD)
         cur = dbconn.cursor()
         nodes = {}
         cur.execute("select * from yggindex")
@@ -42,7 +50,6 @@ class nodesCurrent(Resource):
 
         dbconn.commit()
         cur.close()
-        dbconn.close()
 
         nodelist = {}
         nodelist['yggnodes'] = nodes
@@ -53,10 +60,6 @@ class nodesCurrent(Resource):
 # nodes info
 class nodesInfo(Resource):
     def get(self):
-        dbconn = psycopg2.connect(host=DB_HOST,\
-                                    database=DB_NAME,\
-                                    user=DB_USER,\
-                                    password=DB_PASSWORD)
         cur = dbconn.cursor()
         nodes = {}
         cur.execute("select * from yggnodeinfo")
@@ -66,7 +69,6 @@ class nodesInfo(Resource):
 
         dbconn.commit()
         cur.close()
-        dbconn.close()
 
         nodeinfo = {}
         nodeinfo['yggnodeinfo'] = nodes
@@ -77,10 +79,6 @@ class nodesInfo(Resource):
 # alive nodes count for latest 24 hours
 class nodes24h(Resource):
     def get(self):
-        dbconn = psycopg2.connect(host=DB_HOST,\
-                                    database=DB_NAME,\
-                                    user=DB_USER,\
-                                    password=DB_PASSWORD)
         cur = dbconn.cursor()
         nodes = {}
         cur.execute("SELECT * FROM timeseries ORDER BY unixtstamp DESC LIMIT 24")
@@ -89,21 +87,23 @@ class nodes24h(Resource):
 
         dbconn.commit()
         cur.close()
-        dbconn.close()
 
         nodeinfo = {}
         nodeinfo['nodes24h'] = nodes
 
         return nodeinfo
 
+# alive nodes count for latest 24 hours
+class crawlResult(Resource):
+    def get(self):
+        with open('api/results.json', 'r') as f:
+            data = json.load(f)
+
+        return data
 
 
 @app.route("/")
 def fpage():
-    dbconn = psycopg2.connect(host=DB_HOST,\
-                                database=DB_NAME,\
-                                user=DB_USER,\
-                                password=DB_PASSWORD)
     cur = dbconn.cursor()
     nodes = 0
     cur.execute("select * from yggindex")
@@ -114,15 +114,19 @@ def fpage():
 
     dbconn.commit()
     cur.close()
-    dbconn.close()
 
     return render_template('index.html', nodes=nodes)
 
 
-#sort out the api request here for the url
+# sort out the api request here for the url
 api.add_resource(nodesCurrent, '/current')
 api.add_resource(nodesInfo, '/nodeinfo')
 api.add_resource(nodes24h, '/nodes24h')
+api.add_resource(crawlResult, '/result.json')
+
+# regirster signal handler
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
 
 if __name__ == '__main__':
     app.run(host='::', port=3000)

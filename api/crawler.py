@@ -13,12 +13,14 @@ import traceback
 from threading import Lock, Thread
 from queue import Queue
 
+#####
+
 # Configuration to use TCP connection or unix domain socket for admin connection to yggdrasil
 useAdminSock = True
 yggAdminTCP  = ('localhost', 9001)
 yggAdminSock = ('/var/run/yggdrasil.sock')
 
-DB_PASSWORD = "password"
+DB_PASS = "password"
 DB_USER = "yggindex"
 DB_NAME = "yggindex"
 DB_HOST = "localhost"
@@ -26,6 +28,8 @@ DB_HOST = "localhost"
 ## Save in database node info fields like buildname, buildarch, etc. (True/False)?
 saveDefaultNodeInfo = False
 removableFileds = ['buildname', 'buildarch', 'buildplatform', 'buildversion', 'board_name', 'kernel', 'model', 'system']
+
+#####
 
 class Worker(Thread):
     def __init__(self, tasks):
@@ -140,7 +144,7 @@ def insert_new_entry(ipv6, coords):
                 nodejson = json.dumps(nodeinfo[ipv6])
                 nodename = nodeinfo[ipv6]["name"] if "name" in nodeinfo[ipv6] else ""
 
-        dbconn = psycopg2.connect(host=DB_HOST, database=DB_NAME, user=DB_USER, password=DB_PASSWORD)
+        dbconn = psycopg2.connect(host=DB_HOST, database=DB_NAME, user=DB_USER, password=DB_PASS)
         cur = dbconn.cursor()
         timestamp = str(int(time.time()))
 
