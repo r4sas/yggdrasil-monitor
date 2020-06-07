@@ -93,6 +93,25 @@ class nodes24h(Resource):
 
         return nodeinfo
 
+
+# alive nodes count for latest 30 days
+class nodes30d(Resource):
+    def get(self):
+        cur = dbconn.cursor()
+        nodes = {}
+        cur.execute("SELECT * FROM timeseries ORDER BY unixtstamp DESC LIMIT 24 * 30")
+        for i in cur.fetchall():
+            nodes[i[1]] = i[0]
+
+        dbconn.commit()
+        cur.close()
+
+        nodeinfo = {}
+        nodeinfo['nodes30d'] = nodes
+
+        return nodeinfo
+
+
 # alive nodes count for latest 24 hours
 class crawlResult(Resource):
     def get(self):
@@ -122,6 +141,7 @@ def fpage():
 api.add_resource(nodesCurrent, '/current')
 api.add_resource(nodesInfo, '/nodeinfo')
 api.add_resource(nodes24h, '/nodes24h')
+api.add_resource(nodes30d, '/nodes30d')
 api.add_resource(crawlResult, '/result.json')
 
 # regirster signal handler
