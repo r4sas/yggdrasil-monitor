@@ -1,6 +1,6 @@
-# niflheim-api.py
+# Yggdrasil-monitor
 
-Niflheim-api provides both a web interface and an api. The web interface is used to see some basic stats on the data vserv.py has collected and the API provides raw data in JSON format.  
+Yggdrasil-monitor provides both a web interface and an api. The web interface is used to see some basic stats on the data has collected by crawler and the API provides raw data in JSON format.  
 
 ## Install & Setup
 

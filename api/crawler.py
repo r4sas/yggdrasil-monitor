@@ -12,22 +12,7 @@ import ipaddress
 import traceback
 from threading import Lock, Thread
 from queue import Queue
-
-#####
-
-# Configuration to use TCP connection or unix domain socket for admin connection to yggdrasil
-useAdminSock = True
-yggAdminTCP  = ('localhost', 9001)
-yggAdminSock = ('/var/run/yggdrasil.sock')
-
-DB_PASS = "password"
-DB_USER = "yggindex"
-DB_NAME = "yggindex"
-DB_HOST = "localhost"
-
-## Save in database node info fields like buildname, buildarch, etc. (True/False)?
-saveDefaultNodeInfo = False
-removableFileds = ['buildname', 'buildarch', 'buildplatform', 'buildversion', 'board_name', 'kernel', 'model', 'system']
+from config import DB_PASS, DB_USER, DB_NAME, DB_HOST, useAdminSock, yggAdminTCP, yggAdminSock, saveDefaultNodeInfo, removableFileds
 
 #####
 
@@ -210,11 +195,11 @@ for k,v in selfInfo['response']['self'].items():
 # Loop over rumored nodes and ping them, adding to visited if they respond
 while len(rumored) > 0:
     for k,v in rumored.items():
-        #print("Processing", v['coords'])
+        # print("Processing", v['coords'])
         handleResponse(k, v, doRequest(getDHTPingRequest(v['box_pub_key'], v['coords'])))
         break
     del rumored[k]
-#End
+# End
 
 nodeinfopool.wait()
 

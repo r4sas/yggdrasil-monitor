@@ -1,36 +1,47 @@
 #!/usr/bin/env python
 
 import signal, sys, time
-from flask import Flask, render_template
+from functools import wraps
+from flask import Flask, Response, render_template
 from flask_restful import Resource, Api
 import requests
 import psycopg2
 import json
-
-######
-
-DB_PASS = "password"
-DB_USER = "yggindex"
-DB_NAME = "yggindex"
-DB_HOST = "localhost"
-
-# count peer alive if it was available not more that amount of seconds ago
-# I'm using 1 hour beause of running crawler every 15 minutes
-ALIVE_SECONDS = 3600 # 1 hour
+from config import DB_PASS, DB_USER, DB_NAME, DB_HOST, DB_RETRIES, DB_RECONNIDLE, ALIVE_SECONDS
 
 ######
 
 app = Flask(__name__)
 api = Api(app)
 
-dbconn = psycopg2.connect(host=DB_HOST,\
-                          database=DB_NAME,\
-                          user=DB_USER,\
-                          password=DB_PASS)
+def pg_connect():
+    return psycopg2.connect(host=DB_HOST,\
+                              database=DB_NAME,\
+                              user=DB_USER,\
+                              password=DB_PASS)
+
+
+# dbconn = pg_connect() # initialize connection
+
+
+def retry(fn):
+    @wraps(fn)
+    def wrapper(*args, **kw):
+        for x in range(DB_RETRIES):
+            try:
+                return fn(*args, **kw)
+            except (psycopg2.InterfaceError, psycopg2.OperationalError) as e:
+                print ("\nDatabase Connection [InterfaceError or OperationalError]")
+                print ("Idle for %s seconds" % (cls._reconnectIdle))
+                time.sleep(DB_RECONNIDLE)
+                dbconn = pg_connect()
+    return wrapper
+
 
 def signal_handler(sig, frame):
     dbconn.close()
     sys.exit(0)
+
 
 def age_calc(ustamp):
     if (time.time() - ustamp) <= ALIVE_SECONDS:
@@ -38,10 +49,14 @@ def age_calc(ustamp):
     else:
         return False
 
+
 # active nodes
 class nodesCurrent(Resource):
+    @retry
     def get(self):
+        dbconn = pg_connect()
         cur = dbconn.cursor()
+
         nodes = {}
         cur.execute("select * from yggindex")
         for i in cur.fetchall():
@@ -51,15 +66,18 @@ class nodesCurrent(Resource):
         dbconn.commit()
         cur.close()
 
-        nodelist = {}
-        nodelist['yggnodes'] = nodes
+        nodeinfo = {}
+        nodeinfo['yggnodes'] = nodes
 
-        return nodelist
+        dbconn.close()
+        return nodeinfo
 
 
 # nodes info
 class nodesInfo(Resource):
+    @retry
     def get(self):
+        dbconn = pg_connect()
         cur = dbconn.cursor()
         nodes = {}
         cur.execute("select * from yggnodeinfo")
@@ -73,12 +91,15 @@ class nodesInfo(Resource):
         nodeinfo = {}
         nodeinfo['yggnodeinfo'] = nodes
 
+        dbconn.close()
         return nodeinfo
 
 
 # alive nodes count for latest 24 hours
 class nodes24h(Resource):
+    @retry
     def get(self):
+        dbconn = pg_connect()
         cur = dbconn.cursor()
         nodes = {}
         cur.execute("SELECT * FROM timeseries ORDER BY unixtstamp DESC LIMIT 24")
@@ -91,12 +112,15 @@ class nodes24h(Resource):
         nodeinfo = {}
         nodeinfo['nodes24h'] = nodes
 
+        dbconn.close()
         return nodeinfo
 
 
 # alive nodes count for latest 30 days
 class nodes30d(Resource):
+    @retry
     def get(self):
+        dbconn = pg_connect()
         cur = dbconn.cursor()
         nodes = {}
         cur.execute("SELECT * FROM timeseries ORDER BY unixtstamp DESC LIMIT 24 * 30")
@@ -109,20 +133,14 @@ class nodes30d(Resource):
         nodeinfo = {}
         nodeinfo['nodes30d'] = nodes
 
+        dbconn.close()
         return nodeinfo
 
 
-# alive nodes count for latest 24 hours
-class crawlResult(Resource):
-    def get(self):
-        with open('api/results.json', 'r') as f:
-            data = json.load(f)
-
-        return data
-
-
 @app.route("/")
+@retry
 def fpage():
+    dbconn = pg_connect()
     cur = dbconn.cursor()
     nodes = 0
     cur.execute("select * from yggindex")
@@ -134,19 +152,32 @@ def fpage():
     dbconn.commit()
     cur.close()
 
+    dbconn.close()
     return render_template('index.html', nodes=nodes)
 
+@app.route('/map')
+@app.route('/map/network')
+def page_network():
+    return render_template('map/network.html', page='network')
+
+@app.route('/map/about')
+def page_about():
+    return render_template('map/about.html', page='about')
+
+@app.after_request
+def add_header(response):
+    response.cache_control.max_age = 300
+    return response
 
 # sort out the api request here for the url
 api.add_resource(nodesCurrent, '/current')
 api.add_resource(nodesInfo, '/nodeinfo')
 api.add_resource(nodes24h, '/nodes24h')
 api.add_resource(nodes30d, '/nodes30d')
-api.add_resource(crawlResult, '/result.json')
 
 # regirster signal handler
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
 if __name__ == '__main__':
-    app.run(host='::', port=3000)
+    app.run(host='127.0.0.1', port=3001)

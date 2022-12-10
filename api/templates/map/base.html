@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>0200::/7 – Mapping The Yggdrasil Network</title>
+		<script src="{{ url_for('static', filename='map/jquery-2.0.3.min.js')}}"></script>
+		<script src="{{ url_for('static', filename='map/jquery.autocomplete.min.js')}}"></script>
+		<link href="{{ url_for('static', filename='map/style.css')}}" rel="stylesheet" type="text/css">
+	</head>
+	<body>
+		<div id="header">
+			<h1>0200<span class="grey">::/7</span></h1>
+
+			<ul>
+				<li><a href="/">Status</a></li>
+				<li><a href="/map" {% if page == 'network' %} class="selected" {% endif %}>Map</a></li>
+				<li><a href="/map/about"{% if page == 'about' %} class="selected" {% endif %}>About</a></li>
+				<li><a href="https://github.com/r4sas/yggdrasil-monitor">Source</a></li>
+				<li><tt>{% if ip is not none %}{{ ip }}{% endif %}</tt></li>
+			</ul>
+		</div>
+
+		{% block content %}{% endblock %}
+	</body>
+</html>

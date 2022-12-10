@@ -1,39 +1,37 @@
 #!/usr/bin/env python
 
 import psycopg2, json, traceback
+from config import DB_PASS, DB_USER, DB_NAME, DB_HOST, saveDefaultNodeInfo, removableFileds
+from pk2addr import keyTo128BitAddress
 
 #####
 
-# Configuration to use TCP connection or unix domain socket for admin connection to yggdrasil
-DB_PASS = "password"
-DB_USER = "yggindex"
-DB_NAME = "yggindex"
-DB_HOST = "localhost"
-
-## Save in database node info fields like buildname, buildarch, etc. (True/False)?
-saveDefaultNodeInfo = False
-removableFileds = ['buildname', 'buildarch', 'buildplatform', 'buildversion', 'board_name', 'kernel', 'model', 'system']
-
-#####
-
-with open('api/results.json', 'r') as f:
+with open('api/result.json', 'r') as f:
     data = json.load(f)
-
-timestamp = data['meta']['generated_at_utc']
 
 # connect to database
 dbconn = psycopg2.connect(host=DB_HOST, database=DB_NAME, user=DB_USER, password=DB_PASS)
 cur = dbconn.cursor()
 
 # start importing
-for node in data['topology']:
+for key, node in data['yggnodes'].items():
     nodename = ""
     nodeinfo = {}
-    ipv6 = data['topology'][node]['ipv6_addr']
-    coords = '[%s]' % (' '.join(str(e) for e in data['topology'][node]['coords']))
 
-    if node in data['nodeinfo']:
-        nodeinfo = data['nodeinfo'][node]
+    if "address" in node:
+        ipv6 = keyTo128BitAddress(node['address']) if len(node['address']) == 64 else node['address']
+    else:
+        ipv6 = keyTo128BitAddress(key)
+
+    if "coords" in node:
+        coords = node['coords']
+    else:
+        continue
+
+    timestamp = node['time']
+
+    if "nodeinfo" in node:
+        nodeinfo = node['nodeinfo']
 
         if not saveDefaultNodeInfo:
             # remove default Node info fields
@@ -42,10 +40,8 @@ for node in data['topology']:
 
     if "name" in nodeinfo:
         nodename = nodeinfo['name']
-    elif data['topology'][node]['found'] == False:
-        nodename = '? %s' % coords
     else:
-        nodename = ipv6
+        nodename = '? %s' % coords
 
     nodeinfo = json.dumps(nodeinfo)
 
@@ -66,4 +62,3 @@ for node in data['topology']:
 dbconn.commit()
 cur.close()
 dbconn.close()
-

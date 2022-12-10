@@ -1,21 +1,12 @@
 #!/usr/bin/env python
 
-#max/min for the day with nodes
+# max/min for the day with nodes
 
 import psycopg2
 import time
+from config import DB_PASS, DB_USER, DB_NAME, DB_HOST, ALIVE_SECONDS
 
-#run every hour
-
-DB_PASS = "password"
-DB_USER = "yggindex"
-DB_NAME = "yggindex"
-DB_HOST = "localhost"
-
-# count peer alive if it was available not more that amount of seconds ago
-# I'm using 1 hour beause of running crawler every 15 minutes
-ALIVE_SECONDS = 3600 # 1 hour
-
+# run every hour
 
 def age_calc(ustamp):
 	if (time.time() - ustamp) <= ALIVE_SECONDS :

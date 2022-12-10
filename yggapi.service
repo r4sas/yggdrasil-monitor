@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/opt/yggdrasil-api
-ExecStart=/opt/yggdrasil-api/venv/bin/python /opt/yggdrasil-api/api/niflheim-api.py
+ExecStart=/opt/yggdrasil-api/venv/bin/python /opt/yggdrasil-api/api/web.py
 Restart=always
 
 Type=simple

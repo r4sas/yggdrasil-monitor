@@ -1,0 +1,17 @@
+{% extends "map/base.html" %}
+
+{% block content %}
+	<div id="content-wrapper">
+		<div id="content">
+			<h2>About</h2>
+			<p>This is a project that aims to demystify what the <a href="https://yggdrasil-network.github.io/">Yggdrasil</a> network is like. Currently the only thing we have here is a map of the spanning tree subset of the network. The full source code is at <a href="https://github.com/Arceliar/yggdrasil-map">GitHub</a>.</p>
+
+			<h3>Network map</h3>
+			<p>The network page has a map of Yggdrasil's spanning tree as it is now. The map is not complete since it is hard/impossible to get a full picture of the network, and it only includes the minimum subset of links needed to construct the spanning tree. The known nodes and tree coordinates are taken from <a href="http://y.yakamo.org:3000/">Yakamo's API</a>. Node names can be configured by setting a "name" field in <a href="https://yggdrasil-network.github.io/configuration.html">NodeInfo</a>, or from <a href="https://github.com/yakamok/yggdrasil-nodelist">Yakamo's node list</a> as a fallback.</p>
+
+			<h3>Contact</h3>
+			<p>This project was forked from <em>zielmicha</em>'s fork of <em>Randati</em>'s fc00. 
+			The yggdrasil developers can be contacted over matrix or IRC, for more info see: <a href="https://yggdrasil-network.github.io/">yggdrasil-network.github.io</a>.</p>
+		</div>
+	</div>
+{% endblock %}

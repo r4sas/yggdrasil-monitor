@@ -1,0 +1,24 @@
+### Configuration file ###
+
+### Database configuration ###
+DB_PASS = "password"
+DB_USER = "yggindex"
+DB_NAME = "yggindex"
+DB_HOST = "localhost"
+
+DB_RETRIES = 3
+DB_RECONNIDLE = 2
+
+# count peer alive if it was available not more that amount of seconds ago
+# I'm using 1 hour beause of running crawler every 30 minutes
+ALIVE_SECONDS = 3600 # 1 hour
+
+### Built-in crawler configuration ###
+# Configuration to use TCP connection or unix domain socket for admin connection to yggdrasil
+useAdminSock = True
+yggAdminTCP  = ('localhost', 9001)
+yggAdminSock = ('/var/run/yggdrasil.sock')
+
+# Save in database node info fields like buildname, buildarch, etc. (True/False)?
+saveDefaultNodeInfo = False
+removableFileds = ['buildname', 'buildarch', 'buildplatform', 'buildversion', 'board_name', 'kernel', 'model', 'system']
